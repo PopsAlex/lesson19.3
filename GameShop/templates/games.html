@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends "menu.html" %}
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    <ul>
+    {% block content %}
+        {% for i in games %}
+            <li>{{ i.title }} | {{ i.description }}. Стоимость: {{ i.cost }} <button>{{ button1 }}</button></li>
+        {% endfor %}
+    {% endblock %}
+    </ul>
+</body>
+</html>
