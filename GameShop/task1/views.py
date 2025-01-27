@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from .forms import UserRegister
-from .models import Game
+from .models import Game, Buyer
 
 # Create your views here.
 def platform(request):
@@ -46,6 +46,8 @@ def cart(request):
 
 
 def sign_up_by_django(request):
+    Buyers = Buyer.objects.all()
+    print(Buyers)
     title = 'Главная'
     context = {
         'title': title,
@@ -59,39 +61,17 @@ def sign_up_by_django(request):
             password = form.cleaned_data['password']
             repeat_password = form.cleaned_data['repeat_password']
             age = form.cleaned_data['age']
-            if password == repeat_password and int(age) >= 18 and username not in users:
+            if password == repeat_password and int(age) >= 18 and username not in [i.name for i in Buyers]:
                 context['username'] = f'Приветствуем, {username}!'
+                Buyer.objects.create(name=username, age=age)
                 return render(request, 'platform.html', context)
             elif password != repeat_password:
                 info['error'] = 'Пароли не совпадают'
             elif int(age) < 18:
                 info['error'] = 'Вы должны быть старше 18'
-            elif username in users:
+            elif username in [i.name for i in Buyers]:
                 info['error'] = 'Пользователь уже существует'
     else:
         form = UserRegister()
     info['form'] = form
     return render(request, 'registration_page.html', info)
-
-
-# def sign_up_by_html(request):
-#     users = ['vasya', 'georgy', 'lenka', 'navuhodonosor']
-#     info = {}
-#     if request.method == 'POST':
-#         username = request.POST.get('username')
-#         password = request.POST.get('password')
-#         repeat_password = request.POST.get('repeat_password')
-#         age = request.POST.get('age')
-#         print('юзернаме', username)
-#         print('пассворд', password)
-#         print('репит пассворд', repeat_password)
-#         print('возраст и тип', age, type(age))
-#         if password == repeat_password and int(age) >= 18 and username not in users:
-#             return HttpResponse(f'Приветствуем, {username}!')
-#         elif password != repeat_password:
-#             info['error'] = 'Пароли не совпадают'
-#         elif int(age) < 18:
-#             info['error'] = 'Вы должны быть старше 18'
-#         elif username in users:
-#             info['error'] = 'Пользователь уже существует'
-#     return render(request, 'registration_page.html', info)
